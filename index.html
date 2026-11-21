@@ -419,7 +419,28 @@
       if (active) await loadReviews();
     });
 
+    const rankingLinks = Array.from(document.querySelectorAll('[data-restaurant]'));
+    let scoreLoadVersion = 0;
+
+    function rankRestaurants(totals) {
+      const ranked = [...rankingLinks].sort((left, right) => {
+        const a = totals.get(left.dataset.restaurant);
+        const b = totals.get(right.dataset.restaurant);
+        if (!a || !b) return Number(Boolean(b)) - Number(Boolean(a));
+        return b.sum * a.count - a.sum * b.count;
+      });
+      ranked.forEach(link => {
+        const row = link.closest('tr');
+        const total = totals.get(link.dataset.restaurant);
+        const cell = row.lastElementChild;
+        cell.textContent = total ? (total.sum / total.count).toFixed(1) + ' / 5' : '';
+        if (total) add(cell, 'span', total.count + (total.count === 1 ? ' review' : ' reviews'), 'review-count');
+        row.parentElement.append(row);
+      });
+    }
+
     async function loadScores() {
+      const version = ++scoreLoadVersion;
       const totals = new Map();
       for (let start = 0; ; start += 500) {
         const { data, error } = await api.from('reviews').select('restaurant,rating').order('id').range(start, start + 499);
@@ -432,12 +453,7 @@
         });
         if (data.length < 500) break;
       }
-      document.querySelectorAll('[data-restaurant]').forEach(link => {
-        const cell = link.closest('tr').lastElementChild;
-        const total = totals.get(link.dataset.restaurant);
-        cell.textContent = total ? (total.sum / total.count).toFixed(1) + ' / 5' : '';
-        if (total) add(cell, 'span', total.count + (total.count === 1 ? ' review' : ' reviews'), 'review-count');
-      });
+      if (version === scoreLoadVersion) rankRestaurants(totals);
     }
 
     function addCommentForm(article, review) {
