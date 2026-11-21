@@ -197,6 +197,14 @@
       <section class="about-card" aria-labelledby="vote-title">
         <h3 id="vote-title">Vote as an R-PAD member</h3>
         <p>Member voting is coming soon.</p>
+        <h4>Restaurant rating rubric</h4>
+        <dl>
+          <dt><strong>5 · Strong Accept</strong></dt><dd>Exceptional. Highly recommended and worth a special trip.</dd>
+          <dt><strong>4 · Weak Accept</strong></dt><dd>Good overall. Worth recommending, with minor drawbacks.</dd>
+          <dt><strong>3 · Borderline</strong></dt><dd>Mixed experience. The strengths and weaknesses are about evenly balanced.</dd>
+          <dt><strong>2 · Weak Reject</strong></dt><dd>Some redeeming qualities, but hard to recommend overall.</dd>
+          <dt><strong>1 · Strong Reject</strong></dt><dd>Major issues. Would not recommend.</dd>
+        </dl>
       </section>
       <a class="back" href="#home">Back to home</a>
     </section>
@@ -213,7 +221,7 @@
         <summary>Add a review</summary>
         <form id="review-form" class="review-form">
           <label>Reviewer name <input name="author" maxlength="80" required></label>
-          <label>Rating (out of 10) <input name="rating" type="number" min="1" max="10" step="1" required></label>
+          <label>Rating <select name="rating" required><option value="">Select a rating</option><option value="1">1 · Strong Reject</option><option value="2">2 · Weak Reject</option><option value="3">3 · Borderline</option><option value="4">4 · Weak Accept</option><option value="5">5 · Strong Accept</option></select></label>
           <label>Strengths <textarea name="strengths" rows="3" maxlength="2000" required></textarea></label>
           <label>Weaknesses <textarea name="weaknesses" rows="3" maxlength="2000" required></textarea></label>
           <button class="button button-primary">Save review</button>
@@ -223,7 +231,7 @@
         <summary>Example review</summary>
         <article class="review">
           <h3>Sample reviewer · Illustrative only</h3>
-          <p><strong>Rating:</strong> 8 / 10</p>
+          <p><strong>Rating:</strong> 4 / 5 · Weak Accept</p>
           <p><strong>Strengths:</strong> The menu was easy to navigate and the portions were generous.</p>
           <p><strong>Weaknesses:</strong> There was limited seating during the lunch rush.</p>
           <p class="reply"><strong>Example comment:</strong> How long did you wait for a table?</p>
@@ -232,6 +240,7 @@
     </section>
   </main>
   <script>
+    const ratingLabels = ["Strong Reject","Weak Reject","Borderline","Weak Accept","Strong Accept"];
     const restaurantDescriptions = {"the-eatery-at-pitt":"Pitt’s campus dining hall offers multiple stations, from ramen and pasta to sandwiches and comfort food.","noodlehead":"This Shadyside noodle shop serves dishes inspired by Thai street food.","zens-noodle-house":"This Oakland noodle shop serves ramen, noodle soups, and stir-fried noodles.","tasty-noodle":"This Squirrel Hill noodle shop specializes in Xi’an-style hand-pulled noodles.","green-pepper":"This Squirrel Hill Korean restaurant serves dishes such as bibimbap and Korean barbecue.","kyuramen":"This East Liberty location of Kyuramen serves Japanese-style ramen.","chengdu-gourmet-squirrel-hill":"This Squirrel Hill restaurant specializes in Sichuan cooking.","mala-hotpot":"This Oakland hot pot spot lets diners choose ingredients for mala soup or stir-fry.","butterjoint":"This North Oakland neighborhood spot serves food and drinks on North Craig Street.","yotea-and-yoka-kitchen":"This North Oakland spot serves Sichuan-style mala hot pots and snacks.","pepper-space":"This Forbes Avenue restaurant serves Chinese dishes with Sichuan flavors.","chipotle-mexican-grill-oakland":"This Oakland location serves build-your-own burritos, bowls, and tacos.","rose-tea-cafe-express":"This Craig Street takeout spot serves Taiwanese and Chinese dishes.","meet-bao-former-location":"This former Oakland dumpling shop served Taiwanese bao and dumplings.","ali-baba-restaurant":"This Craig Street restaurant serves Middle Eastern food.","cava-oakland":"This Oakland location serves customizable Mediterranean bowls and pitas.","roots-natural-kitchen-oakland":"This Forbes Avenue location serves grain bowls and salads.","senyai-thai-kitchen":"This Shadyside Thai restaurant serves curries, noodles, and other Thai dishes.","taiwanese-bistro-cafe-33":"This Squirrel Hill bistro serves Taiwanese comfort food, including soup dumplings and braised pork rice.","piada-italian-street-food-oakland":"This Oakland location serves Italian-style wraps, pasta, and salads.","surf-poke":"This Centre Avenue spot serves Hawaiian-style poke bowls, sushi, and bubble tea.","thai-gourmet-food-truck":"This Oakland food truck serves Thai food near Bigelow Boulevard.","india-on-wheels":"This Pittsburgh food truck serves Indian dishes such as curries and biryani.","thai-and-noodle-outlet":"This Squirrel Hill restaurant serves Thai noodle dishes, fried rice, and curries.","yue-bai-wei":"This Squirrel Hill restaurant serves Chinese dishes on Forbes Avenue.","everyday-noodles":"This Squirrel Hill restaurant serves noodles, soups, and dumplings.","primanti-bros-oakland":"This Oakland branch serves Pittsburgh-style sandwiches with fries and slaw.","chaykhana":"This West End restaurant serves Central Asian dishes.","meet-pho":"This Atwood Street spot serves customizable pho.","pho-van":"This Strip District restaurant serves Vietnamese pho and other Vietnamese dishes.","chikn-oakland":"This Oakland spot specializes in hot chicken.","raising-canes-chicken-fingers-oakland":"This Oakland location serves chicken fingers, fries, and Texas toast.","mcdonalds-oakland":"This Forbes Avenue location serves McDonald’s burgers, fries, and other fast-food staples.","grapow":"This Craig Street restaurant serves Thai food.","hunan-express":"This CMU dining spot serves Asian rice bowls and bubble tea.","taste-of-india":"This CMU dining spot serves Indian food in Resnik House.","tahini":"This Resnik House dining spot serves kosher Mediterranean food.","scottys-market-by-salems":"This campus market at Forbes and Beeler sells groceries and prepared hot meals.","shake-shack-the-terminal":"This Strip District location serves burgers, fries, and shakes at The Terminal.","oishii-bento":"This Oakland restaurant serves Korean and Japanese comfort food."};
     const page = document.querySelector('#restaurant-page');
     const main = document.querySelector('main');
@@ -275,11 +284,15 @@
       }
     }
 
+    function displayRating(review) {
+      return review.scale === 5 ? review.rating : Math.max(1, Math.round(review.rating / 2));
+    }
+
     function renderScores() {
       document.querySelectorAll('[data-restaurant]').forEach(link => {
         const ratings = read(link.dataset.restaurant);
         link.closest('tr').lastElementChild.textContent = ratings.length
-          ? (ratings.reduce((total, review) => total + review.rating, 0) / ratings.length).toFixed(1)
+          ? (ratings.reduce((total, review) => total + displayRating(review), 0) / ratings.length).toFixed(1)
           : '';
       });
     }
@@ -290,7 +303,7 @@
         + 'Reviews and comments are saved in this browser.';
       reviews.forEach((review, index) => {
         const article = addText(list, 'article', '', 'review');
-        const heading = addText(article, 'h3', review.author + ' · ' + review.rating + ' / 10');
+        const heading = addText(article, 'h3', review.author + ' · ' + displayRating(review) + ' / 5 · ' + ratingLabels[displayRating(review) - 1]);
         heading.tabIndex = -1;
         addText(article, 'p', 'Strengths: ' + review.strengths);
         addText(article, 'p', 'Weaknesses: ' + review.weaknesses);
@@ -330,11 +343,11 @@
       const strengths = data.get('strengths').trim();
       const weaknesses = data.get('weaknesses').trim();
       const rating = Number(data.get('rating'));
-      if (!author || !strengths || !weaknesses || !Number.isInteger(rating) || rating < 1 || rating > 10) {
-        status.textContent = 'Enter a name, a rating from 1 to 10, strengths, and weaknesses.';
+      if (!author || !strengths || !weaknesses || !Number.isInteger(rating) || rating < 1 || rating > 5) {
+        status.textContent = 'Enter a name, a rating from 1 to 5, strengths, and weaknesses.';
         return;
       }
-      if (save([...reviews, { author, rating, strengths, weaknesses, comments: [] }])) {
+      if (save([...reviews, { author, rating, scale: 5, strengths, weaknesses, comments: [] }])) {
         form.reset();
         form.parentElement.open = false;
         list.lastElementChild.querySelector('h3').focus();
