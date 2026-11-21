@@ -116,6 +116,11 @@
     .member-page label { display: grid; gap: 0.25rem; }
     .member-page input { padding: 0.5rem; font: inherit; }
     .member-page button:disabled { opacity: 0.65; }
+    .review-form { display: grid; gap: 0.65rem; max-width: 40rem; margin-top: 0.75rem; }
+    .review-form label { display: grid; gap: 0.25rem; }
+    .review-form :is(input,textarea,select) { padding: 0.45rem; font: inherit; }
+    .review-form button { justify-self: start; }
+    [hidden] { display: none !important; }
   </style>
 </head>
 <body>
@@ -212,6 +217,8 @@
       <section class="about-card" aria-labelledby="vote-title">
         <h3 id="vote-title">Vote as an R-PAD member</h3>
         <p>Only approved R-PAD members can post reviews and comments.</p>
+        <p id="member-session" role="status"></p>
+        <button id="member-logout" class="button" type="button" hidden>Log out</button>
         <nav class="member-actions" aria-label="Member account">
           <a class="button button-primary" href="#member-register">Register</a>
           <a class="button" href="#member-login">Log in</a>
@@ -242,7 +249,20 @@
       </dl>
       <p id="review-status" class="notice" role="status"></p>
       <div id="review-list"></div>
-      <p class="notice"><a href="#about-rpad">R-PAD membership</a> is required to add reviews or comments.</p>
+      <p class="notice" id="review-guest"><a href="#member-login">Log in</a> as an approved R-PAD member to review or comment.</p>
+      <details class="review-actions" id="review-entry" hidden>
+        <summary>Add or edit your review</summary>
+        <form id="review-form" class="review-form">
+          <label>Rating <select name="rating" required>
+            <option value="">Select a rating</option>
+            <option value="5">5 · Strong Accept</option><option value="4">4 · Weak Accept</option>
+            <option value="3">3 · Borderline</option><option value="2">2 · Weak Reject</option><option value="1">1 · Strong Reject</option>
+          </select></label>
+          <label>Strengths <textarea name="strengths" rows="3" maxlength="2000" required></textarea></label>
+          <label>Weaknesses <textarea name="weaknesses" rows="3" maxlength="2000" required></textarea></label>
+          <button class="button button-primary">Publish review</button>
+        </form>
+      </details>
       <details class="review-actions">
         <summary>Example review</summary>
         <article class="review">
@@ -261,13 +281,13 @@
       <a href="#about-rpad">Back to About R-PAD</a>
       <h2 id="register-title">Register as an R-PAD member</h2>
       <p>New accounts require approval. Approved members can publish reviews and comments.</p>
-      <p id="register-status">Registration is currently unavailable while the account service is being set up.</p>
+      <p id="register-status" role="status"></p>
       <form aria-describedby="register-status">
         <fieldset disabled>
-          <label>Full name <input name="full-name" autocomplete="name"></label>
-          <label>Reviewer ID <input name="reviewer-id" autocomplete="username"></label>
-          <label>Password <input name="password" type="password" autocomplete="new-password"></label>
-          <button type="button" class="button button-primary">Request approval</button>
+          <label>Full name <input name="full-name" autocomplete="name" minlength="2" maxlength="80" required></label>
+          <label>Reviewer ID <input name="reviewer-id" autocomplete="username" pattern="[A-Za-z0-9_\-]{3,30}" title="3 to 30 letters, numbers, underscores, or hyphens" required></label>
+          <label>Password <input name="password" type="password" autocomplete="new-password" minlength="8" maxlength="72" required></label>
+          <button type="submit" class="button button-primary">Request approval</button>
         </fieldset>
       </form>
       <a href="#member-login">Already registered? Log in</a>
@@ -275,28 +295,33 @@
     <section class="panel destination member-page" id="member-login" aria-labelledby="login-title">
       <a href="#about-rpad">Back to About R-PAD</a>
       <h2 id="login-title">R-PAD member login</h2>
-      <p id="login-status">Login is currently unavailable while the account service is being set up.</p>
+      <p id="login-status" role="status"></p>
       <form aria-describedby="login-status">
         <fieldset disabled>
-          <label>Reviewer ID <input name="reviewer-id" autocomplete="username"></label>
-          <label>Password <input name="password" type="password" autocomplete="current-password"></label>
-          <button type="button" class="button button-primary">Log in</button>
+          <label>Reviewer ID <input name="reviewer-id" autocomplete="username" pattern="[A-Za-z0-9_\-]{3,30}" title="3 to 30 letters, numbers, underscores, or hyphens" required></label>
+          <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+          <button type="submit" class="button button-primary">Log in</button>
         </fieldset>
       </form>
       <a href="#member-register">Need an account? Register</a>
     </section>
   </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const ratingLabels = ["Strong Reject","Weak Reject","Borderline","Weak Accept","Strong Accept"];
+    const ratingLabels = ['Strong Reject', 'Weak Reject', 'Borderline', 'Weak Accept', 'Strong Accept'];
     const restaurantDescriptions = {"the-eatery-at-pitt":"Pitt’s campus dining hall offers multiple stations, from ramen and pasta to sandwiches and comfort food.","noodlehead":"This Shadyside noodle shop serves dishes inspired by Thai street food.","zens-noodle-house":"This Oakland noodle shop serves ramen, noodle soups, and stir-fried noodles.","tasty-noodle":"This Squirrel Hill noodle shop specializes in Xi’an-style hand-pulled noodles.","green-pepper":"This Squirrel Hill Korean restaurant serves dishes such as bibimbap and Korean barbecue.","kyuramen":"This East Liberty location of Kyuramen serves Japanese-style ramen.","chengdu-gourmet-squirrel-hill":"This Squirrel Hill restaurant specializes in Sichuan cooking.","mala-hotpot":"This Oakland hot pot spot lets diners choose ingredients for mala soup or stir-fry.","butterjoint":"This North Oakland neighborhood spot serves food and drinks on North Craig Street.","yotea-and-yoka-kitchen":"This North Oakland spot serves Sichuan-style mala hot pots and snacks.","pepper-space":"This Forbes Avenue restaurant serves Chinese dishes with Sichuan flavors.","chipotle-mexican-grill-oakland":"This Oakland location serves build-your-own burritos, bowls, and tacos.","rose-tea-cafe-express":"This Craig Street takeout spot serves Taiwanese and Chinese dishes.","meet-bao-former-location":"This former Oakland dumpling shop served Taiwanese bao and dumplings.","ali-baba-restaurant":"This Craig Street restaurant serves Middle Eastern food.","cava-oakland":"This Oakland location serves customizable Mediterranean bowls and pitas.","roots-natural-kitchen-oakland":"This Forbes Avenue location serves grain bowls and salads.","senyai-thai-kitchen":"This Shadyside Thai restaurant serves curries, noodles, and other Thai dishes.","taiwanese-bistro-cafe-33":"This Squirrel Hill bistro serves Taiwanese comfort food, including soup dumplings and braised pork rice.","piada-italian-street-food-oakland":"This Oakland location serves Italian-style wraps, pasta, and salads.","surf-poke":"This Centre Avenue spot serves Hawaiian-style poke bowls, sushi, and bubble tea.","thai-gourmet-food-truck":"This Oakland food truck serves Thai food near Bigelow Boulevard.","india-on-wheels":"This Pittsburgh food truck serves Indian dishes such as curries and biryani.","thai-and-noodle-outlet":"This Squirrel Hill restaurant serves Thai noodle dishes, fried rice, and curries.","yue-bai-wei":"This Squirrel Hill restaurant serves Chinese dishes on Forbes Avenue.","everyday-noodles":"This Squirrel Hill restaurant serves noodles, soups, and dumplings.","primanti-bros-oakland":"This Oakland branch serves Pittsburgh-style sandwiches with fries and slaw.","chaykhana":"This West End restaurant serves Central Asian dishes.","meet-pho":"This Atwood Street spot serves customizable pho.","pho-van":"This Strip District restaurant serves Vietnamese pho and other Vietnamese dishes.","chikn-oakland":"This Oakland spot specializes in hot chicken.","raising-canes-chicken-fingers-oakland":"This Oakland location serves chicken fingers, fries, and Texas toast.","mcdonalds-oakland":"This Forbes Avenue location serves McDonald’s burgers, fries, and other fast-food staples.","grapow":"This Craig Street restaurant serves Thai food.","hunan-express":"This CMU dining spot serves Asian rice bowls and bubble tea.","taste-of-india":"This CMU dining spot serves Indian food in Resnik House.","tahini":"This Resnik House dining spot serves kosher Mediterranean food.","scottys-market-by-salems":"This campus market at Forbes and Beeler sells groceries and prepared hot meals.","shake-shack-the-terminal":"This Strip District location serves burgers, fries, and shakes at The Terminal.","oishii-bento":"This Oakland restaurant serves Korean and Japanese comfort food."};
+    const api = window.supabase?.createClient('https://gwpymhlxpmqxqzpkpyyt.supabase.co', 'sb_publishable_TpeePJTIw36CMePn0xprZw_i1VCH37M');
     const page = document.querySelector('#restaurant-page');
-    const main = document.querySelector('main');
     const list = document.querySelector('#review-list');
     const status = document.querySelector('#review-status');
+    const entry = document.querySelector('#review-entry');
+    const reviewForm = document.querySelector('#review-form');
+    const logout = document.querySelector('#member-logout');
     let active = '';
-    let reviews = [];
+    let reviewer = null;
+    let loadVersion = 0;
 
-    function addText(parent, tag, content, className) {
+    function add(parent, tag, content, className) {
       const element = document.createElement(tag);
       element.textContent = content;
       if (className) element.className = className;
@@ -304,99 +329,212 @@
       return element;
     }
 
-    function key(id) {
-      return 'rpad-dinner-reviews:' + id;
+    function accountEmail(id) {
+      return id.trim().toLowerCase() + '@rpad-dinner.example.com';
     }
 
-    function read(id) {
-      try {
-        const saved = JSON.parse(localStorage.getItem(key(id)));
-        return Array.isArray(saved) ? saved : [];
-      } catch {
-        return [];
-      }
+    function syncControls() {
+      entry.hidden = !reviewer;
+      logout.hidden = !reviewer;
+      document.querySelector('#review-guest').hidden = Boolean(reviewer);
+      document.querySelector('#member-session').textContent = reviewer ? 'Signed in as ' + reviewer : '';
     }
 
-    function displayRating(review) {
-      return review.scale === 5 ? review.rating : Math.max(1, Math.round(review.rating / 2));
+    async function refreshMember() {
+      const { data: { session } } = await api.auth.getSession();
+      reviewer = session ? (await api.rpc('member_status')).data : null;
+      syncControls();
     }
 
-    function averageRating(entries) {
-      return (entries.reduce((total, review) => total + displayRating(review), 0) / entries.length).toFixed(1);
-    }
-
-    function renderScores() {
-      document.querySelectorAll('[data-restaurant]').forEach(link => {
-        const ratings = read(link.dataset.restaurant);
-        const scoreCell = link.closest('tr').lastElementChild;
-        scoreCell.textContent = ratings.length ? averageRating(ratings) + ' / 5' : '';
-        if (ratings.length) addText(scoreCell, 'span', ratings.length + (ratings.length === 1 ? ' review' : ' reviews'), 'review-count');
-      });
-    }
-
-    function renderReviews() {
-      list.replaceChildren();
-      page.querySelector('#review-count').textContent = reviews.length;
-      page.querySelector('#review-average').textContent = reviews.length ? averageRating(reviews) + ' / 5' : '—';
-      status.textContent = (reviews.length ? reviews.length + (reviews.length === 1 ? ' review. ' : ' reviews. ') : 'No reviews yet. ')
-        + 'Previously saved reviews and comments are visible in this browser.';
-      reviews.forEach((review, index) => {
-        const article = addText(list, 'article', '', 'review');
-        const heading = addText(article, 'h3', 'Review by ' + review.author);
-        heading.tabIndex = -1;
-        const metadata = addText(article, 'p', '', 'review-meta');
-        addText(metadata, 'span', 'Restaurant review', 'badge');
-        if (review.createdAt) metadata.append(' · ' + new Date(review.createdAt).toLocaleDateString());
-        const fields = addText(article, 'dl', '', 'review-fields');
-        const rating = displayRating(review);
-        for (const [label, value] of [
-          ['Rating', rating + ' / 5 · ' + ratingLabels[rating - 1]],
-          ['Strengths', review.strengths],
-          ['Weaknesses', review.weaknesses]
-        ]) {
-          addText(fields, 'dt', label, 'field-label');
-          addText(fields, 'dd', value);
+    function wireAccountForm(id, handler) {
+      const form = document.querySelector('#member-' + id + ' form');
+      const feedback = document.querySelector('#' + id + '-status');
+      const fields = form.querySelector('fieldset');
+      fields.disabled = !api;
+      if (!api) feedback.textContent = 'Account service could not load. Refresh to try again.';
+      form.addEventListener('submit', async event => {
+        event.preventDefault();
+        const data = new FormData(form);
+        fields.disabled = true;
+        try {
+          feedback.textContent = await handler(data);
+          form.reset();
+        } catch (error) {
+          feedback.textContent = error.message || 'Account service is unavailable. Try again.';
+        } finally {
+          fields.disabled = false;
         }
-        review.comments.forEach(comment => {
-          const reply = addText(article, 'div', '', 'reply');
-          addText(reply, 'strong', comment.author);
-          addText(reply, 'p', comment.body);
-        });
-
       });
     }
+
+    wireAccountForm('register', async data => {
+      const { error } = await api.auth.signUp({
+        email: accountEmail(data.get('reviewer-id')),
+        password: data.get('password'),
+        options: { data: { full_name: data.get('full-name').trim() } }
+      });
+      if (error) throw new Error(error.message);
+      await api.auth.signOut({ scope: 'local' });
+      return 'Registration submitted. You can log in once your account is approved.';
+    });
+
+    wireAccountForm('login', async data => {
+      const { error } = await api.auth.signInWithPassword({
+        email: accountEmail(data.get('reviewer-id')), password: data.get('password')
+      });
+      if (error) throw new Error('Sign-in failed. Check your Reviewer ID and password.');
+      await refreshMember();
+      if (!reviewer) {
+        await api.auth.signOut({ scope: 'local' });
+        return 'Your account is awaiting approval.';
+      }
+      location.hash = '#about-rpad';
+      return 'Signed in.';
+    });
+
+    logout.addEventListener('click', async () => {
+      const { error } = await api.auth.signOut({ scope: 'local' });
+      if (error) {
+        document.querySelector('#member-session').textContent = 'Could not sign out. Try again.';
+        return;
+      }
+      await refreshMember();
+      if (active) await loadReviews();
+    });
+
+    async function loadScores() {
+      const totals = new Map();
+      for (let start = 0; ; start += 500) {
+        const { data, error } = await api.from('reviews').select('restaurant,rating').order('id').range(start, start + 499);
+        if (error) return;
+        data.forEach(review => {
+          const total = totals.get(review.restaurant) || { sum: 0, count: 0 };
+          total.sum += review.rating;
+          total.count++;
+          totals.set(review.restaurant, total);
+        });
+        if (data.length < 500) break;
+      }
+      document.querySelectorAll('[data-restaurant]').forEach(link => {
+        const cell = link.closest('tr').lastElementChild;
+        const total = totals.get(link.dataset.restaurant);
+        cell.textContent = total ? (total.sum / total.count).toFixed(1) + ' / 5' : '';
+        if (total) add(cell, 'span', total.count + (total.count === 1 ? ' review' : ' reviews'), 'review-count');
+      });
+    }
+
+    function addCommentForm(article, review) {
+      const details = add(article, 'details', '', 'review-actions');
+      add(details, 'summary', 'Add a comment');
+      const form = add(details, 'form', '', 'review-form');
+      form.innerHTML = '<label>Comment <textarea name="body" maxlength="2000" rows="3" required></textarea></label>'
+        + '<button class="button button-primary">Publish comment</button>';
+      const button = form.querySelector('button');
+      form.addEventListener('submit', async event => {
+        event.preventDefault();
+        button.disabled = true;
+        try {
+          const { error } = await api.rpc('post_comment', {
+            p_review: review.id, p_body: new FormData(form).get('body').trim()
+          });
+          if (error) { status.textContent = 'Could not publish comment. Check your login and try again.'; return; }
+          await loadReviews();
+          status.textContent = 'Comment published.';
+        } finally {
+          button.disabled = false;
+        }
+      });
+    }
+
+    async function loadReviews() {
+      const version = ++loadVersion;
+      const { data: reviews, error } = await api.from('reviews')
+        .select('id,author,rating,strengths,weaknesses,created_at,comments(id,author,body,created_at)')
+        .eq('restaurant', active).order('created_at');
+      if (version !== loadVersion || !active) return;
+      if (error) { status.textContent = 'Could not load reviews. Try refreshing.'; return; }
+      list.replaceChildren();
+      const total = reviews.length;
+      page.querySelector('#review-count').textContent = total;
+      page.querySelector('#review-average').textContent = total
+        ? (reviews.reduce((sum, review) => sum + review.rating, 0) / total).toFixed(1) + ' / 5' : '—';
+      status.textContent = total ? '' : 'No reviews yet.';
+      const own = reviews.find(review => review.author === reviewer);
+      reviewForm.elements.rating.value = own?.rating || '';
+      reviewForm.elements.strengths.value = own?.strengths || '';
+      reviewForm.elements.weaknesses.value = own?.weaknesses || '';
+      reviews.forEach(review => {
+        const article = add(list, 'article', '', 'review');
+        add(article, 'h3', 'Review by ' + review.author);
+        const meta = add(article, 'p', '', 'review-meta');
+        add(meta, 'span', 'Restaurant review', 'badge');
+        meta.append(' · ' + new Date(review.created_at).toLocaleDateString());
+        const fields = add(article, 'dl', '', 'review-fields');
+        for (const [label, value] of [
+          ['Rating', review.rating + ' / 5 · ' + ratingLabels[review.rating - 1]],
+          ['Strengths', review.strengths], ['Weaknesses', review.weaknesses]
+        ]) {
+          add(fields, 'dt', label, 'field-label');
+          add(fields, 'dd', value);
+        }
+        review.comments.sort((a, b) => a.created_at.localeCompare(b.created_at)).forEach(comment => {
+          const reply = add(article, 'div', '', 'reply');
+          add(reply, 'strong', comment.author);
+          add(reply, 'p', comment.body);
+        });
+        if (reviewer) addCommentForm(article, review);
+      });
+    }
+
+    reviewForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      const button = reviewForm.querySelector('button');
+      const data = new FormData(reviewForm);
+      button.disabled = true;
+      try {
+        const { error } = await api.rpc('post_review', {
+          p_restaurant: active, p_rating: Number(data.get('rating')),
+          p_strengths: data.get('strengths').trim(), p_weaknesses: data.get('weaknesses').trim()
+        });
+        if (error) { status.textContent = 'Could not publish review. Check your login and try again.'; return; }
+        entry.open = false;
+        await Promise.all([loadReviews(), loadScores()]);
+        status.textContent = 'Review published.';
+      } finally {
+        button.disabled = false;
+      }
+    });
 
     function showPage() {
       const id = location.hash.startsWith('#restaurant/') ? location.hash.slice(12) : '';
       active = Object.hasOwn(restaurantDescriptions, id) ? id : '';
       page.hidden = !active;
-      main.classList.toggle('show-restaurant', Boolean(active));
+      document.querySelector('main').classList.toggle('show-restaurant', Boolean(active));
       if (!active) return;
       const title = page.querySelector('#restaurant-name');
-      const restaurantLink = document.querySelector('[data-restaurant="' + active + '"]');
-      title.textContent = restaurantLink.textContent;
-      const travel = restaurantLink.closest('tr').cells[1].querySelector('a').cloneNode(true);
+      const link = document.querySelector('[data-restaurant="' + active + '"]');
+      title.textContent = link.textContent;
+      page.querySelector('#restaurant-description').textContent = restaurantDescriptions[active];
       const travelLine = page.querySelector('#restaurant-travel');
       travelLine.replaceChildren();
-      addText(travelLine, 'strong', 'Travel from CMU Newell-Simon Hall ', 'field-label');
-      travelLine.append(travel);
-      page.querySelector('#restaurant-description').textContent = restaurantDescriptions[active];
-      page.querySelectorAll('details').forEach(details => { details.open = false; });
-      reviews = read(active);
-      renderReviews();
+      add(travelLine, 'strong', 'Travel from CMU Newell-Simon Hall ', 'field-label');
+      travelLine.append(link.closest('tr').cells[1].querySelector('a').cloneNode(true));
+      list.replaceChildren();
+      page.querySelector('#review-count').textContent = '0';
+      page.querySelector('#review-average').textContent = '—';
+      reviewForm.reset();
+      entry.open = false;
+      status.textContent = api ? 'Loading reviews…' : 'Review service could not load. Refresh to try again.';
       title.focus();
+      if (api) void loadReviews();
     }
 
     window.addEventListener('hashchange', showPage);
-    window.addEventListener('storage', () => {
-      renderScores();
-      if (active) {
-        reviews = read(active);
-        renderReviews();
-      }
-    });
-    renderScores();
     showPage();
+    if (api) {
+      void loadScores();
+      void refreshMember().then(() => active && loadReviews());
+    }
   </script>
 </body>
 </html>
