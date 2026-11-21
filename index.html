@@ -1,46 +1,25 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>R-PAD Dinner</title>
-  <style>
-    body {
-      margin: 0;
-      background: #fff8ef;
-      color: #301c17;
-      font-family: system-ui, sans-serif;
-    }
-
-    main {
-      box-sizing: border-box;
-      min-height: 100svh;
-      display: grid;
-      place-content: center;
-      padding: 2rem 1rem;
-      text-align: center;
-    }
-
-    h1 {
-      margin: 0;
+(async function () {
+arguments[0]({ evaluate(source) { return eval(source); } });
+var updated=source.replace('    header {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: 0;
+      padding: 1.5rem clamp(1rem, 4vw, 3rem);
       color: #8d2c24;
-      font-family: Georgia, serif;
-      font-size: clamp(2.75rem, 9vw, 7rem);
-      line-height: 1.05;
-      letter-spacing: -0.05em;
+      font-size: 0.95rem;
+      font-weight: 650;
     }
 
-    p {
-      margin: 1rem 0 0;
-      font-size: clamp(1rem, 2.5vw, 1.3rem);
-      line-height: 1.5;
+    main p {','    header {\n      position: absolute;\n      inset-block-start: 0;\n      inset-inline-start: 0;\n      padding: 1.5rem clamp(1rem, 4vw, 3rem);\n      color: #8d2c24;\n      font-size: 0.95rem;\n      font-weight: 650;\n    }\n\n    main p {') + '\n    }\n  </style>\n</head>\n<body>\n  <header>Find good food</header>\n  <main>\n    <h1>R-PAD Dinner</h1>\n    <p>What to eat around CMU</p>\n  </main>\n</body>\n</html>\n'; await tab.playwright.locator('.cm-content').fill(updated); await tab.playwright.getByRole('button',{name:'Commit changes...'}).click(); await tab.playwright.getByRole('textbox',{name:'Commit message'}).fill('Separate homepage slogan and subtitle'); await tab.playwright.getByRole('button',{name:'Commit changes',exact:true}).click(); await tab.playwright.getByRole('dialog',{name:'Commit changes'}).waitFor({state:'hidden',timeoutMs:15000}); nodeRepl.write(await tab.url());
+})
     }
   </style>
 </head>
 <body>
+  <header>Find good food</header>
   <main>
     <h1>R-PAD Dinner</h1>
-    <p>Trust our taste. Find good food near CMU.</p>
+    <p>What to eat around CMU</p>
   </main>
 </body>
 </html>
