@@ -92,10 +92,6 @@
     .review h3 { font-size: 1rem; }
     .review p, .reply p { white-space: pre-wrap; overflow-wrap: anywhere; }
     .reply { margin: 0.85rem 0 0 1rem; padding-left: 0.75rem; border-left: 2px solid var(--gray); }
-    .review-form { display: grid; gap: 0.65rem; max-width: 40rem; margin-top: 0.75rem; }
-    .review-form label { display: grid; gap: 0.2rem; font-weight: 600; }
-    .review-form :is(input, textarea, select) { width: 100%; padding: 0.4rem; border: 1px solid #777; border-radius: 0.15rem; font: inherit; }
-    .review-form button { justify-self: start; font: inherit; cursor: pointer; }
     .review-actions { margin-top: 1rem; }
     summary { cursor: pointer; color: var(--link); font-weight: 650; }
     .notice { font-size: 0.9rem; }
@@ -210,7 +206,7 @@
       </section>
       <section class="about-card" aria-labelledby="vote-title">
         <h3 id="vote-title">Vote as an R-PAD member</h3>
-        <p>Member voting is coming soon.</p>
+        <p>Only approved R-PAD members can post reviews and comments. Member registration and sign-in are coming soon.</p>
         <h4>Restaurant rating rubric</h4>
         <dl>
           <dt><strong>5 · Strong Accept</strong></dt><dd>Exceptional. Highly recommended and worth a special trip.</dd>
@@ -237,16 +233,7 @@
       </dl>
       <p id="review-status" class="notice" role="status"></p>
       <div id="review-list"></div>
-      <details class="review-actions">
-        <summary>Add a review</summary>
-        <form id="review-form" class="review-form">
-          <label>Reviewer name <input name="author" maxlength="80" required></label>
-          <label>Rating <select name="rating" required><option value="">Select a rating</option><option value="1">1 · Strong Reject</option><option value="2">2 · Weak Reject</option><option value="3">3 · Borderline</option><option value="4">4 · Weak Accept</option><option value="5">5 · Strong Accept</option></select></label>
-          <label>Strengths <textarea name="strengths" rows="3" maxlength="2000" required></textarea></label>
-          <label>Weaknesses <textarea name="weaknesses" rows="3" maxlength="2000" required></textarea></label>
-          <button class="button button-primary">Save review</button>
-        </form>
-      </details>
+      <p class="notice"><a href="#about-rpad">R-PAD membership</a> is required to add reviews or comments.</p>
       <details class="review-actions">
         <summary>Example review</summary>
         <article class="review">
@@ -267,7 +254,6 @@
     const restaurantDescriptions = {"the-eatery-at-pitt":"Pitt’s campus dining hall offers multiple stations, from ramen and pasta to sandwiches and comfort food.","noodlehead":"This Shadyside noodle shop serves dishes inspired by Thai street food.","zens-noodle-house":"This Oakland noodle shop serves ramen, noodle soups, and stir-fried noodles.","tasty-noodle":"This Squirrel Hill noodle shop specializes in Xi’an-style hand-pulled noodles.","green-pepper":"This Squirrel Hill Korean restaurant serves dishes such as bibimbap and Korean barbecue.","kyuramen":"This East Liberty location of Kyuramen serves Japanese-style ramen.","chengdu-gourmet-squirrel-hill":"This Squirrel Hill restaurant specializes in Sichuan cooking.","mala-hotpot":"This Oakland hot pot spot lets diners choose ingredients for mala soup or stir-fry.","butterjoint":"This North Oakland neighborhood spot serves food and drinks on North Craig Street.","yotea-and-yoka-kitchen":"This North Oakland spot serves Sichuan-style mala hot pots and snacks.","pepper-space":"This Forbes Avenue restaurant serves Chinese dishes with Sichuan flavors.","chipotle-mexican-grill-oakland":"This Oakland location serves build-your-own burritos, bowls, and tacos.","rose-tea-cafe-express":"This Craig Street takeout spot serves Taiwanese and Chinese dishes.","meet-bao-former-location":"This former Oakland dumpling shop served Taiwanese bao and dumplings.","ali-baba-restaurant":"This Craig Street restaurant serves Middle Eastern food.","cava-oakland":"This Oakland location serves customizable Mediterranean bowls and pitas.","roots-natural-kitchen-oakland":"This Forbes Avenue location serves grain bowls and salads.","senyai-thai-kitchen":"This Shadyside Thai restaurant serves curries, noodles, and other Thai dishes.","taiwanese-bistro-cafe-33":"This Squirrel Hill bistro serves Taiwanese comfort food, including soup dumplings and braised pork rice.","piada-italian-street-food-oakland":"This Oakland location serves Italian-style wraps, pasta, and salads.","surf-poke":"This Centre Avenue spot serves Hawaiian-style poke bowls, sushi, and bubble tea.","thai-gourmet-food-truck":"This Oakland food truck serves Thai food near Bigelow Boulevard.","india-on-wheels":"This Pittsburgh food truck serves Indian dishes such as curries and biryani.","thai-and-noodle-outlet":"This Squirrel Hill restaurant serves Thai noodle dishes, fried rice, and curries.","yue-bai-wei":"This Squirrel Hill restaurant serves Chinese dishes on Forbes Avenue.","everyday-noodles":"This Squirrel Hill restaurant serves noodles, soups, and dumplings.","primanti-bros-oakland":"This Oakland branch serves Pittsburgh-style sandwiches with fries and slaw.","chaykhana":"This West End restaurant serves Central Asian dishes.","meet-pho":"This Atwood Street spot serves customizable pho.","pho-van":"This Strip District restaurant serves Vietnamese pho and other Vietnamese dishes.","chikn-oakland":"This Oakland spot specializes in hot chicken.","raising-canes-chicken-fingers-oakland":"This Oakland location serves chicken fingers, fries, and Texas toast.","mcdonalds-oakland":"This Forbes Avenue location serves McDonald’s burgers, fries, and other fast-food staples.","grapow":"This Craig Street restaurant serves Thai food.","hunan-express":"This CMU dining spot serves Asian rice bowls and bubble tea.","taste-of-india":"This CMU dining spot serves Indian food in Resnik House.","tahini":"This Resnik House dining spot serves kosher Mediterranean food.","scottys-market-by-salems":"This campus market at Forbes and Beeler sells groceries and prepared hot meals.","shake-shack-the-terminal":"This Strip District location serves burgers, fries, and shakes at The Terminal.","oishii-bento":"This Oakland restaurant serves Korean and Japanese comfort food."};
     const page = document.querySelector('#restaurant-page');
     const main = document.querySelector('main');
-    const form = document.querySelector('#review-form');
     const list = document.querySelector('#review-list');
     const status = document.querySelector('#review-status');
     let active = '';
@@ -283,19 +269,6 @@
 
     function key(id) {
       return 'rpad-dinner-reviews:' + id;
-    }
-
-    function save(next) {
-      try {
-        localStorage.setItem(key(active), JSON.stringify(next));
-      } catch {
-        status.textContent = 'Could not save in this browser.';
-        return false;
-      }
-      reviews = next;
-      renderReviews();
-      renderScores();
-      return true;
     }
 
     function read(id) {
@@ -329,7 +302,7 @@
       page.querySelector('#review-count').textContent = reviews.length;
       page.querySelector('#review-average').textContent = reviews.length ? averageRating(reviews) + ' / 5' : '—';
       status.textContent = (reviews.length ? reviews.length + (reviews.length === 1 ? ' review. ' : ' reviews. ') : 'No reviews yet. ')
-        + 'Reviews and comments are saved in this browser.';
+        + 'Previously saved reviews and comments are visible in this browser.';
       reviews.forEach((review, index) => {
         const article = addText(list, 'article', '', 'review');
         const heading = addText(article, 'h3', 'Review by ' + review.author);
@@ -353,46 +326,8 @@
           addText(reply, 'p', comment.body);
         });
 
-        const details = addText(article, 'details', '', 'review-actions');
-        addText(details, 'summary', 'Add a comment');
-        const commentForm = addText(details, 'form', '', 'review-form');
-        commentForm.innerHTML = '<label>Name <input name="author" maxlength="80" required></label>'
-          + '<label>Comment <textarea name="body" maxlength="2000" rows="3" required></textarea></label>'
-          + '<button class="button button-primary">Save comment</button>';
-        commentForm.addEventListener('submit', event => {
-          event.preventDefault();
-          const data = new FormData(commentForm);
-          const author = data.get('author').trim();
-          const body = data.get('body').trim();
-          if (!author || !body) {
-            status.textContent = 'Enter both a name and a comment.';
-            return;
-          }
-          const next = reviews.map((item, i) => i === index
-            ? { ...item, comments: [...item.comments, { author, body }] }
-            : item);
-          if (save(next)) list.children[index].querySelector('h3').focus();
-        });
       });
     }
-
-    form.addEventListener('submit', event => {
-      event.preventDefault();
-      const data = new FormData(form);
-      const author = data.get('author').trim();
-      const strengths = data.get('strengths').trim();
-      const weaknesses = data.get('weaknesses').trim();
-      const rating = Number(data.get('rating'));
-      if (!author || !strengths || !weaknesses || !Number.isInteger(rating) || rating < 1 || rating > 5) {
-        status.textContent = 'Enter a name, a rating from 1 to 5, strengths, and weaknesses.';
-        return;
-      }
-      if (save([...reviews, { author, rating, scale: 5, strengths, weaknesses, comments: [], createdAt: Date.now() }])) {
-        form.reset();
-        form.parentElement.open = false;
-        list.lastElementChild.querySelector('h3').focus();
-      }
-    });
 
     function showPage() {
       const id = location.hash.startsWith('#restaurant/') ? location.hash.slice(12) : '';
@@ -409,8 +344,6 @@
       addText(travelLine, 'strong', 'Travel from CMU Newell-Simon Hall ', 'field-label');
       travelLine.append(travel);
       page.querySelector('#restaurant-description').textContent = restaurantDescriptions[active];
-      form.reset();
-      form.parentElement.open = false;
       page.querySelectorAll('details').forEach(details => { details.open = false; });
       reviews = read(active);
       renderReviews();
