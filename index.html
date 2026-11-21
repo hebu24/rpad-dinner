@@ -5,10 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>R-PAD Dinner</title>
   <style>
+    :root {
+      --gray: #eeeae9;
+      --charcoal: #242124;
+      --dark-red: #782632;
+      --light-red: #f3c4ca;
+    }
+
     body {
       margin: 0;
-      background: #fff8ef;
-      color: #301c17;
+      background: var(--gray);
+      color: var(--charcoal);
       font-family: system-ui, sans-serif;
     }
 
@@ -17,11 +24,11 @@
       top: clamp(1rem, 4vw, 2.5rem);
       left: clamp(1rem, 4vw, 3rem);
       padding: 0.4em 0.75em 0.5em;
-      border: 1px solid #8d2c24;
+      border: 1px solid var(--dark-red);
       border-radius: 0.2rem;
-      background: #8d2c24;
-      color: #fff8ef;
-      box-shadow: 0.18em 0.18em 0 #e7b6a1;
+      background: var(--dark-red);
+      color: var(--gray);
+      box-shadow: 0.18em 0.18em 0 var(--light-red);
       font: italic 700 clamp(1.35rem, 3.2vw, 2.15rem)/1 Georgia, serif;
       letter-spacing: -0.025em;
       transform: rotate(-4deg);
@@ -39,7 +46,7 @@
 
     h1, h2 {
       margin: 0;
-      color: #8d2c24;
+      color: var(--dark-red);
       font-family: Georgia, serif;
       line-height: 1.05;
       letter-spacing: -0.05em;
@@ -64,22 +71,27 @@
     }
 
     .button {
-      border: 1px solid #8d2c24;
+      border: 1px solid var(--dark-red);
       border-radius: 0.5rem;
       padding: 0.75rem 1.25rem;
-      color: #8d2c24;
+      color: var(--dark-red);
       font-weight: 650;
       text-decoration: none;
     }
 
-    .button-primary, .button:hover {
-      background: #8d2c24;
-      color: #fff8ef;
+    .button:hover {
+      background: var(--light-red);
+      color: var(--charcoal);
     }
 
-    .button-primary:hover { background: #6f201a; }
-    .back { margin-top: 2rem; color: #8d2c24; }
-    a:focus-visible { outline: 2px solid #301c17; outline-offset: 4px; }
+    .button-primary {
+      background: var(--dark-red);
+      color: var(--gray);
+    }
+
+    .button-primary:hover { background: var(--light-red); color: var(--charcoal); }
+    .back { margin-top: 2rem; color: var(--dark-red); }
+    a:focus-visible { outline: 2px solid var(--charcoal); outline-offset: 4px; }
 
     .destination { display: none; }
     .destination:target { display: grid; }
