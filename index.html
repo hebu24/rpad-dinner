@@ -4,22 +4,26 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>R-PAD Dinner</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&amp;display=swap">
   <style>
     :root {
-      --paper: #f7f7f7;
+      --paper: #fff;
       --gray: #ddd;
-      --charcoal: #262626;
-      --dark-red: #782632;
-      --light-red: #f3d7dc;
+      --charcoal: #333;
+      --dark-red: #8c1b13;
+      --heading: #2c3a4a;
+      --link: #3e6775;
+      --light-red: #f7eeee;
     }
 
     * { box-sizing: border-box; }
-    body { margin: 0; background: var(--paper); color: var(--charcoal); font: 1rem/1.55 system-ui, sans-serif; }
-    a { color: var(--dark-red); }
+    body { margin: 0; background: var(--paper); color: var(--charcoal); font: 1rem/1.55 'Noto Sans', system-ui, sans-serif; }
+    a { color: var(--link); }
     a:focus-visible { outline: 2px solid var(--dark-red); outline-offset: 4px; }
+    .site-header a:focus-visible { outline-color: var(--paper); }
     .icon-library { position: absolute; }
 
-    .site-header { border-top: 4px solid var(--dark-red); border-bottom: 1px solid var(--gray); }
+    .site-header { background: var(--dark-red); border-bottom: 1px solid var(--dark-red); }
     .header-content {
       max-width: 65rem;
       margin: auto;
@@ -29,16 +33,16 @@
       flex-wrap: wrap;
       gap: 0.5rem 1rem;
     }
-    .brand { font-weight: 750; text-decoration: none; }
-    .slogan { color: var(--dark-red); font: italic 700 1.15rem Georgia, serif; }
+    .brand { color: var(--paper); font-weight: 800; text-decoration: none; }
+    .slogan { color: var(--paper); font-size: 1.15rem; font-weight: 700; font-style: italic; }
     .site-header nav { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin-left: auto; }
-    .site-header nav a { color: var(--charcoal); text-decoration: none; }
+    .site-header nav a { color: var(--paper); text-decoration: none; }
     .site-header nav a:hover { text-decoration: underline; }
 
     main { max-width: 65rem; margin: auto; padding: clamp(1.5rem, 5vw, 4rem) 1rem; }
     .panel { border: 1px solid var(--gray); padding: clamp(1rem, 4vw, 2.5rem); }
     #home { border-top: 3px solid var(--dark-red); }
-    h1, h2, h3 { margin: 0; color: var(--dark-red); line-height: 1.2; }
+    h1, h2, h3 { margin: 0; color: var(--heading); line-height: 1.2; }
     h1 { font-size: clamp(2.3rem, 6vw, 4.1rem); }
     h2 { font-size: clamp(1.7rem, 4vw, 2.35rem); }
     h3 { font-size: 1.16rem; }
