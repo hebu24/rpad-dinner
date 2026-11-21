@@ -154,6 +154,18 @@
     </section>
     <section class="panel destination" id="food-rankings" aria-labelledby="rankings-title">
       <h2 id="rankings-title">Food Rankings</h2>
+      <details id="add-restaurant" class="review-actions" hidden>
+        <summary class="button">Add Restaurant</summary>
+        <form class="review-form">
+          <label>Restaurant name <input name="name" maxlength="120" required></label>
+          <label>Short description <textarea name="description" maxlength="500" rows="2" required></textarea></label>
+          <label>Address <input name="address" maxlength="240" required></label>
+          <label>Travel mode <select name="mode"><option value="walking">Walk</option><option value="transit">Bus</option><option value="driving">Uber</option></select></label>
+          <label>Estimated minutes from CMU Newell-Simon Hall <input name="minutes" type="number" min="1" max="300" required></label>
+          <button class="button button-primary">Publish restaurant</button>
+        </form>
+      </details>
+      <p id="restaurant-feedback" role="status"></p>
       <p id="travel-note">Estimated travel times from CMU’s Newell-Simon Hall. Times vary with traffic, bus schedules, and food truck locations.</p>
       <ul class="travel-legend" aria-label="Travel modes">
         <li><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> Walk</li>
@@ -343,6 +355,7 @@
 
     function syncControls() {
       entry.hidden = !reviewer;
+      document.querySelector('#add-restaurant').hidden = !reviewer;
       logout.hidden = !reviewer;
       document.querySelector('#review-guest').hidden = Boolean(reviewer);
       document.querySelector('#member-session').textContent = reviewer ? 'Signed in as ' + reviewer : '';
@@ -562,10 +575,86 @@
       if (api) void loadReviews();
     }
 
+    const restaurantForm = document.querySelector('#add-restaurant form');
+    const restaurantFeedback = document.querySelector('#restaurant-feedback');
+
+    async function loadMemberRestaurants() {
+      const body = document.querySelector('.rankings tbody');
+      for (let start = 0; ; start += 500) {
+        const {data, error} = await api.from('member_restaurants')
+          .select('id,name,description,address,mode,minutes').order('created_at').order('id').range(start, start + 499);
+        if (error) throw error;
+        for (const item of data) {
+          const id = 'member-' + item.id;
+          if (Object.hasOwn(restaurantDescriptions, id)) continue;
+          const row = body.insertRow();
+          const name = add(row, 'th', '');
+          name.scope = 'row';
+          const link = add(name, 'a', item.name);
+          link.href = '#restaurant/' + id;
+          link.dataset.restaurant = id;
+          const route = add(row.insertCell(), 'a', item.minutes + ' min');
+          const modes = {walking: ['Walk','walk'], transit: ['Bus','bus'], driving: ['Uber','car']};
+          const [label, icon] = modes[item.mode];
+          route.setAttribute('aria-label', label + ', about ' + item.minutes + ' minutes, open directions');
+          const glyph = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          glyph.setAttribute('class', 'travel-icon');
+          glyph.setAttribute('aria-hidden', 'true');
+          const symbol = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+          symbol.setAttribute('href', '#icon-' + icon);
+          glyph.append(symbol);
+          route.prepend(glyph, ' ');
+          const query = new URLSearchParams({
+            api: '1', origin: 'Newell-Simon Hall, Carnegie Mellon University, Pittsburgh, PA',
+            destination: item.address, travelmode: item.mode
+          });
+          route.href = 'https://www.google.com/maps/dir/?' + query;
+          row.insertCell();
+          restaurantDescriptions[id] = item.description;
+          rankingLinks.push(link);
+        }
+        if (data.length < 500) break;
+      }
+    }
+
+    restaurantForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      const button = restaurantForm.querySelector('button');
+      const data = new FormData(restaurantForm);
+      button.disabled = true;
+      try {
+        const {error} = await api.rpc('add_restaurant', {
+          p_name: data.get('name').trim(), p_description: data.get('description').trim(),
+          p_address: data.get('address').trim(), p_mode: data.get('mode'), p_minutes: Number(data.get('minutes'))
+        });
+        if (error) {
+          restaurantFeedback.textContent = 'Could not publish the restaurant. Check your membership and form entries.';
+          return;
+        }
+        restaurantForm.reset();
+        restaurantForm.parentElement.open = false;
+        restaurantFeedback.textContent = 'Restaurant published.';
+        try {
+          await loadMemberRestaurants();
+          await loadScores();
+        } catch {
+          restaurantFeedback.textContent = 'Restaurant published. Refresh to see it in the rankings.';
+        }
+      } finally {
+        button.disabled = false;
+      }
+    });
+
     window.addEventListener('hashchange', showPage);
     showPage();
     if (api) {
-      void loadScores();
+      void loadMemberRestaurants().then(() => {
+        if (!active && location.hash.startsWith('#restaurant/member-')) showPage();
+        return loadScores();
+      }).catch(() => {
+        restaurantFeedback.textContent = 'Could not load member-added restaurants. Refresh to try again.';
+        void loadScores();
+      });
       void refreshMember().then(() => active && loadReviews());
     }
   </script>
