@@ -110,6 +110,12 @@
     .review-fields dt:not(:first-child) { margin-top: 0.42rem; }
     .review-fields dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
     .rankings .review-count { display: block; color: #555; font-size: 0.85rem; font-weight: 400; }
+      .member-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 1rem; }
+    .member-page form { max-width: 27rem; }
+    .member-page fieldset { border: 0; padding: 0; margin: 1rem 0; display: grid; gap: 0.8rem; }
+    .member-page label { display: grid; gap: 0.25rem; }
+    .member-page input { padding: 0.5rem; font: inherit; }
+    .member-page button:disabled { opacity: 0.65; }
   </style>
 </head>
 <body>
@@ -205,7 +211,11 @@
       </section>
       <section class="about-card" aria-labelledby="vote-title">
         <h3 id="vote-title">Vote as an R-PAD member</h3>
-        <p>Only approved R-PAD members can post reviews and comments. Member registration and sign-in are coming soon.</p>
+        <p>Only approved R-PAD members can post reviews and comments.</p>
+        <nav class="member-actions" aria-label="Member account">
+          <a class="button button-primary" href="#member-register">Register</a>
+          <a class="button" href="#member-login">Log in</a>
+        </nav>
         <h4>Restaurant rating rubric</h4>
         <dl>
           <dt><strong>5 · Strong Accept</strong></dt><dd>Exceptional. Highly recommended and worth a special trip.</dd>
@@ -246,6 +256,34 @@
           <p class="reply"><strong>Example comment:</strong> How long did you wait for a table?</p>
         </article>
       </details>
+    </section>
+    <section class="panel destination member-page" id="member-register" aria-labelledby="register-title">
+      <a href="#about-rpad">Back to About R-PAD</a>
+      <h2 id="register-title">Register as an R-PAD member</h2>
+      <p>New accounts require approval. Approved members can publish reviews and comments.</p>
+      <p id="register-status">Registration is currently unavailable while the account service is being set up.</p>
+      <form aria-describedby="register-status">
+        <fieldset disabled>
+          <label>Full name <input name="full-name" autocomplete="name"></label>
+          <label>Reviewer ID <input name="reviewer-id" autocomplete="username"></label>
+          <label>Password <input name="password" type="password" autocomplete="new-password"></label>
+          <button type="button" class="button button-primary">Request approval</button>
+        </fieldset>
+      </form>
+      <a href="#member-login">Already registered? Log in</a>
+    </section>
+    <section class="panel destination member-page" id="member-login" aria-labelledby="login-title">
+      <a href="#about-rpad">Back to About R-PAD</a>
+      <h2 id="login-title">R-PAD member login</h2>
+      <p id="login-status">Login is currently unavailable while the account service is being set up.</p>
+      <form aria-describedby="login-status">
+        <fieldset disabled>
+          <label>Reviewer ID <input name="reviewer-id" autocomplete="username"></label>
+          <label>Password <input name="password" type="password" autocomplete="current-password"></label>
+          <button type="button" class="button button-primary">Log in</button>
+        </fieldset>
+      </form>
+      <a href="#member-register">Need an account? Register</a>
     </section>
   </main>
   <script>
