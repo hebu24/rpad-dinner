@@ -6,129 +6,105 @@
   <title>R-PAD Dinner</title>
   <style>
     :root {
-      --gray: #eeeae9;
-      --charcoal: #242124;
+      --paper: #f7f7f7;
+      --gray: #ddd;
+      --charcoal: #262626;
       --dark-red: #782632;
-      --light-red: #f3c4ca;
+      --light-red: #f3d7dc;
     }
 
-    body {
-      margin: 0;
-      background: var(--gray);
-      color: var(--charcoal);
-      font-family: system-ui, sans-serif;
-    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--charcoal); font: 1rem/1.55 system-ui, sans-serif; }
+    a { color: var(--dark-red); }
+    a:focus-visible { outline: 2px solid var(--dark-red); outline-offset: 4px; }
+    .icon-library { position: absolute; }
 
-    .slogan {
-      position: absolute;
-      top: clamp(1rem, 4vw, 2.5rem);
-      left: clamp(1rem, 4vw, 3rem);
-      padding: 0.4em 0.75em 0.5em;
+    .site-header { border-top: 4px solid var(--dark-red); border-bottom: 1px solid var(--gray); }
+    .header-content {
+      max-width: 65rem;
+      margin: auto;
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+    }
+    .brand { font-weight: 750; text-decoration: none; }
+    .slogan { color: var(--dark-red); font: italic 700 1.15rem Georgia, serif; }
+    .site-header nav { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin-left: auto; }
+    .site-header nav a { color: var(--charcoal); text-decoration: none; }
+    .site-header nav a:hover { text-decoration: underline; }
+
+    main { max-width: 65rem; margin: auto; padding: clamp(1.5rem, 5vw, 4rem) 1rem; }
+    .panel { border: 1px solid var(--gray); padding: clamp(1rem, 4vw, 2.5rem); }
+    #home { border-top: 3px solid var(--dark-red); }
+    h1, h2, h3 { margin: 0; color: var(--dark-red); line-height: 1.2; }
+    h1 { font-size: clamp(2.3rem, 6vw, 4.1rem); }
+    h2 { font-size: clamp(1.7rem, 4vw, 2.35rem); }
+    h3 { font-size: 1.16rem; }
+    p { margin: 0.7rem 0 0; }
+    #home > p { font-size: 1.16rem; }
+    #home nav { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.5rem; }
+    .button {
+      display: inline-block;
       border: 1px solid var(--dark-red);
       border-radius: 0.2rem;
-      background: var(--dark-red);
-      color: var(--gray);
-      box-shadow: 0.18em 0.18em 0 var(--light-red);
-      font: italic 700 clamp(1.35rem, 3.2vw, 2.15rem)/1 Georgia, serif;
-      letter-spacing: -0.025em;
-      transform: rotate(-4deg);
-    }
-
-    .panel {
-      box-sizing: border-box;
-      min-height: 100svh;
-      display: grid;
-      place-content: center;
-      justify-items: center;
-      padding: 5rem 1rem 3rem;
-      text-align: center;
-    }
-
-    h1, h2 {
-      margin: 0;
-      color: var(--dark-red);
-      font-family: Georgia, serif;
-      line-height: 1.05;
-      letter-spacing: -0.05em;
-    }
-
-    h1 { font-size: clamp(2.75rem, 9vw, 7rem); }
-    h2 { font-size: clamp(2.25rem, 6vw, 4rem); }
-
-    p {
-      margin: 1rem 0 0;
-      max-width: 32rem;
-      font-size: clamp(1rem, 2.5vw, 1.3rem);
-      line-height: 1.5;
-    }
-
-    nav {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.75rem;
-      margin-top: 2rem;
-    }
-
-    .button {
-      border: 1px solid var(--dark-red);
-      border-radius: 0.5rem;
-      padding: 0.75rem 1.25rem;
-      color: var(--dark-red);
-      font-weight: 650;
+      padding: 0.5rem 0.85rem;
       text-decoration: none;
+      font-weight: 650;
     }
+    .button-primary { background: var(--dark-red); color: var(--paper); }
+    .button:hover { background: var(--light-red); color: var(--charcoal); }
 
-    .button:hover {
-      background: var(--light-red);
-      color: var(--charcoal);
+    .travel-legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; padding: 0; margin: 1rem 0; list-style: none; }
+    .travel-icon {
+      width: 1.35rem;
+      height: 1.35rem;
+      vertical-align: -0.3rem;
+      border-radius: 0.18rem;
+      background: var(--paper);
+      fill: none;
+      stroke: #646464;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
-
-    .button-primary {
-      background: var(--dark-red);
-      color: var(--gray);
-    }
-
-    .button-primary:hover { background: var(--light-red); color: var(--charcoal); }
-    .back { margin-top: 2rem; color: var(--dark-red); }
-    a:focus-visible { outline: 2px solid var(--charcoal); outline-offset: 4px; }
-
-    #food-rankings { align-content: start; }
-    .travel-legend {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.5rem 1rem;
-      padding: 0;
-      margin: 1.1rem 0 1.5rem;
-      list-style: none;
-    }
-    .rankings {
-      width: min(100%, 46rem);
-      margin-inline: auto;
-      border-collapse: collapse;
-      text-align: left;
-    }
-    .rankings th, .rankings td {
-      padding: 0.7rem clamp(0.35rem, 2vw, 1rem);
-      border-bottom: 1px solid var(--light-red);
-    }
-    .rankings thead { background: var(--dark-red); color: var(--gray); }
-    .rankings tbody th { font-weight: 600; }
-    .rankings td a { color: var(--dark-red); white-space: nowrap; }
-    .rankings td:last-child { min-width: 2ch; }
-
+    .rankings { width: 100%; border-collapse: collapse; text-align: left; }
+    .rankings th, .rankings td { padding: 0.55rem clamp(0.3rem, 2vw, 0.9rem); border-bottom: 1px solid var(--gray); }
+    .rankings thead { background: var(--light-red); color: var(--dark-red); }
+    .rankings tbody th { font-weight: 600; overflow-wrap: anywhere; }
+    .rankings td a { white-space: nowrap; }
+    .about-card { border-top: 1px solid var(--gray); margin-top: 1.35rem; padding-top: 1rem; }
+    .back { display: inline-block; margin-top: 1.4rem; }
     .destination { display: none; }
-    .destination:target { display: grid; }
+    .destination:target { display: block; }
     main:has(.destination:target) #home { display: none; }
+
+    @media (max-width: 36rem) {
+      .site-header nav { flex-basis: 100%; margin-left: 0; }
+    }
   </style>
 </head>
 <body>
-  <header class="slogan">Trust our taste</header>
+  <svg width="0" height="0" aria-hidden="true" class="icon-library">
+    <symbol id="icon-walk" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2"/><path d="m7 21 3-6 2-6m-6 4 4-2 2-2 3 4h4m-7 1 3 3 1 4"/></symbol>
+    <symbol id="icon-bus" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="15" rx="3"/><path d="M4 11h16M7 18v3m10-3v3M8 15h1m6 0h1"/></symbol>
+    <symbol id="icon-car" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="7" rx="2"/><path d="m5 11 2-5h10l2 5M6 18v2m12-2v2M7 14h1m8 0h1"/></symbol>
+  </svg>
+  <header class="site-header">
+    <div class="header-content">
+      <a class="brand" href="#home">R-PAD Dinner</a>
+      <span class="slogan">Trust our taste</span>
+      <nav aria-label="Site navigation">
+        <a href="#food-rankings">Food Rankings</a>
+        <a href="#about-rpad">About R-PAD</a>
+      </nav>
+    </div>
+  </header>
   <main>
     <section class="panel" id="home" aria-labelledby="home-title">
       <h1 id="home-title">R-PAD Dinner</h1>
-      <p>What to eat around CMU</p>
+      <p>OpenReview for food around CMU</p>
       <nav aria-label="Explore R-PAD Dinner">
         <a class="button button-primary" href="#food-rankings">Food Rankings</a>
         <a class="button" href="#about-rpad">About R-PAD</a>
@@ -138,60 +114,68 @@
       <h2 id="rankings-title">Food Rankings</h2>
       <p id="travel-note">Estimated travel times from CMU’s Newell-Simon Hall. Times vary with traffic, bus schedules, and food truck locations.</p>
       <ul class="travel-legend" aria-label="Travel modes">
-        <li><span aria-hidden="true">🚶</span> Walk</li>
-        <li><span aria-hidden="true">🚌</span> Bus</li>
-        <li><span aria-hidden="true">🚕</span> Rideshare</li>
+        <li><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> Walk</li>
+        <li><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> Bus</li>
+        <li><svg class="travel-icon" aria-hidden="true"><use href="#icon-car"/></svg> Rideshare</li>
       </ul>
       <table class="rankings" aria-labelledby="rankings-title" aria-describedby="travel-note">
         <thead><tr><th scope="col">Restaurant</th><th scope="col">Travel time</th><th scope="col">Score</th></tr></thead>
         <tbody>
-          <tr><th scope="row">The Eatery at Pitt</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3990%20Fifth%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 12–16 minutes, open directions"><span aria-hidden="true">🚶</span> 12–16 min</a></td><td></td></tr>
-          <tr><th scope="row">Noodlehead</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=242%20S%20Highland%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20–30 minutes, open directions"><span aria-hidden="true">🚌</span> 20–30 min</a></td><td></td></tr>
-          <tr><th scope="row">Zen’s Noodle House</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3531%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 15–25 minutes, open directions"><span aria-hidden="true">🚌</span> 15–25 min</a></td><td></td></tr>
-          <tr><th scope="row">Tasty Noodle</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=5824%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 15–25 minutes, open directions"><span aria-hidden="true">🚌</span> 15–25 min</a></td><td></td></tr>
-          <tr><th scope="row">Green Pepper</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=2020%20Murray%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20–30 minutes, open directions"><span aria-hidden="true">🚌</span> 20–30 min</a></td><td></td></tr>
-          <tr><th scope="row">Kyuramen</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=6204%20Penn%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 25–35 minutes, open directions"><span aria-hidden="true">🚌</span> 25–35 min</a></td><td></td></tr>
-          <tr><th scope="row">Chengdu Gourmet (Squirrel Hill)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=5840%20Forward%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20–30 minutes, open directions"><span aria-hidden="true">🚌</span> 20–30 min</a></td><td></td></tr>
-          <tr><th scope="row">Mala Hotpot</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3608%20Fifth%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 15–25 minutes, open directions"><span aria-hidden="true">🚌</span> 15–25 min</a></td><td></td></tr>
-          <tr><th scope="row">Butterjoint</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=208%20N%20Craig%20St%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 10–14 minutes, open directions"><span aria-hidden="true">🚶</span> 10–14 min</a></td><td></td></tr>
-          <tr><th scope="row">Yotea &amp; Yoka Kitchen</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=4615%20Centre%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 14–18 minutes, open directions"><span aria-hidden="true">🚶</span> 14–18 min</a></td><td></td></tr>
-          <tr><th scope="row">Pepper Space</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=4609%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 4–7 minutes, open directions"><span aria-hidden="true">🚶</span> 4–7 min</a></td><td></td></tr>
-          <tr><th scope="row">Chipotle Mexican Grill (Oakland)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3510%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 15–25 minutes, open directions"><span aria-hidden="true">🚌</span> 15–25 min</a></td><td></td></tr>
-          <tr><th scope="row">Rose Tea Cafe Express</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=414%20S%20Craig%20St%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 5–8 minutes, open directions"><span aria-hidden="true">🚶</span> 5–8 min</a></td><td></td></tr>
-          <tr><th scope="row">Meet Bao (former location)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=114%20Atwood%20St%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 15–25 minutes, open directions"><span aria-hidden="true">🚌</span> 15–25 min</a></td><td></td></tr>
-          <tr><th scope="row">Ali Baba Restaurant</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=404%20S%20Craig%20St%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 5–8 minutes, open directions"><span aria-hidden="true">🚶</span> 5–8 min</a></td><td></td></tr>
-          <tr><th scope="row">CAVA (Oakland)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3615%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 15–25 minutes, open directions"><span aria-hidden="true">🚌</span> 15–25 min</a></td><td></td></tr>
-          <tr><th scope="row">Roots Natural Kitchen (Oakland)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3610%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 15–25 minutes, open directions"><span aria-hidden="true">🚌</span> 15–25 min</a></td><td></td></tr>
-          <tr><th scope="row">Senyai Thai Kitchen</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=5865%20Ellsworth%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20–30 minutes, open directions"><span aria-hidden="true">🚌</span> 20–30 min</a></td><td></td></tr>
-          <tr><th scope="row">Taiwanese Bistro Cafe 33</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=1711%20Shady%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 15–25 minutes, open directions"><span aria-hidden="true">🚌</span> 15–25 min</a></td><td></td></tr>
-          <tr><th scope="row">Piada Italian Street Food (Oakland)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3600%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 15–25 minutes, open directions"><span aria-hidden="true">🚌</span> 15–25 min</a></td><td></td></tr>
-          <tr><th scope="row">Surf Poke</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=5400%20Centre%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 15–25 minutes, open directions"><span aria-hidden="true">🚌</span> 15–25 min</a></td><td></td></tr>
-          <tr><th scope="row">Thai Gourmet Food Truck</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=4380%20Bigelow%20Blvd%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 15–20 minutes, open directions"><span aria-hidden="true">🚶</span> 15–20 min</a></td><td></td></tr>
-          <tr><th scope="row">India on Wheels</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=Margaret%20Morrison%20St%20near%20Forbes%20Ave%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 8–13 minutes, open directions"><span aria-hidden="true">🚶</span> 8–13 min</a></td><td></td></tr>
-          <tr><th scope="row">Thai &amp; Noodle Outlet</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=5813%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 15–25 minutes, open directions"><span aria-hidden="true">🚌</span> 15–25 min</a></td><td></td></tr>
-          <tr><th scope="row">Yue Bai Wei</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=5874%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 15–25 minutes, open directions"><span aria-hidden="true">🚌</span> 15–25 min</a></td><td></td></tr>
-          <tr><th scope="row">Everyday Noodles</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=5875%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 15–25 minutes, open directions"><span aria-hidden="true">🚌</span> 15–25 min</a></td><td></td></tr>
-          <tr><th scope="row">Primanti Bros. (Oakland)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3803%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 15–19 minutes, open directions"><span aria-hidden="true">🚶</span> 15–19 min</a></td><td></td></tr>
-          <tr><th scope="row">Chaykhana</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=410%20S%20Main%20St%2C%20Pittsburgh%2C%20PA&amp;travelmode=driving" aria-label="Rideshare, about 20–30 minutes, open directions"><span aria-hidden="true">🚕</span> 20–30 min</a></td><td></td></tr>
-          <tr><th scope="row">Meet Pho</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=114%20Atwood%20St%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 15–25 minutes, open directions"><span aria-hidden="true">🚌</span> 15–25 min</a></td><td></td></tr>
-          <tr><th scope="row">Pho Van</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=2120%20Penn%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=driving" aria-label="Rideshare, about 15–25 minutes, open directions"><span aria-hidden="true">🚕</span> 15–25 min</a></td><td></td></tr>
-          <tr><th scope="row">CHiKN (Oakland)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3712%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 16–20 minutes, open directions"><span aria-hidden="true">🚶</span> 16–20 min</a></td><td></td></tr>
-          <tr><th scope="row">Raising Cane’s Chicken Fingers (Oakland)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3610%20Fifth%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 15–25 minutes, open directions"><span aria-hidden="true">🚌</span> 15–25 min</a></td><td></td></tr>
-          <tr><th scope="row">McDonald’s (Oakland)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3708%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 16–20 minutes, open directions"><span aria-hidden="true">🚶</span> 16–20 min</a></td><td></td></tr>
-          <tr><th scope="row">Grapow</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=411%20S%20Craig%20St%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 5–8 minutes, open directions"><span aria-hidden="true">🚶</span> 5–8 min</a></td><td></td></tr>
-          <tr><th scope="row">Hunan Express</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=Newell-Simon%20Hall%20Atrium%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 1–3 minutes, open directions"><span aria-hidden="true">🚶</span> 1–3 min</a></td><td></td></tr>
-          <tr><th scope="row">Taste of India</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=Resnik%20House%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 7–11 minutes, open directions"><span aria-hidden="true">🚶</span> 7–11 min</a></td><td></td></tr>
-          <tr><th scope="row">Tahini</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=Tartans%20Pavilion%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 7–11 minutes, open directions"><span aria-hidden="true">🚶</span> 7–11 min</a></td><td></td></tr>
-          <tr><th scope="row">Scotty’s Market by Salem’s</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=Forbes%20Beeler%20Apartments%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 8–12 minutes, open directions"><span aria-hidden="true">🚶</span> 8–12 min</a></td><td></td></tr>
-          <tr><th scope="row">Shake Shack (The Terminal)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=1767%20Smallman%20St%2C%20Pittsburgh%2C%20PA&amp;travelmode=driving" aria-label="Rideshare, about 15–25 minutes, open directions"><span aria-hidden="true">🚕</span> 15–25 min</a></td><td></td></tr>
-          <tr><th scope="row">Oishii Bento</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=119%20Oakland%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 16–20 minutes, open directions"><span aria-hidden="true">🚶</span> 16–20 min</a></td><td></td></tr>
+          <tr><th scope="row">The Eatery at Pitt</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3990%20Fifth%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 14 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> 14 min</a></td><td></td></tr>
+          <tr><th scope="row">Noodlehead</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=242%20S%20Highland%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 25 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 25 min</a></td><td></td></tr>
+          <tr><th scope="row">Zen’s Noodle House</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3531%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 20 min</a></td><td></td></tr>
+          <tr><th scope="row">Tasty Noodle</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=5824%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 20 min</a></td><td></td></tr>
+          <tr><th scope="row">Green Pepper</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=2020%20Murray%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 25 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 25 min</a></td><td></td></tr>
+          <tr><th scope="row">Kyuramen</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=6204%20Penn%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 30 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 30 min</a></td><td></td></tr>
+          <tr><th scope="row">Chengdu Gourmet (Squirrel Hill)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=5840%20Forward%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 25 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 25 min</a></td><td></td></tr>
+          <tr><th scope="row">Mala Hotpot</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3608%20Fifth%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 20 min</a></td><td></td></tr>
+          <tr><th scope="row">Butterjoint</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=208%20N%20Craig%20St%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 12 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> 12 min</a></td><td></td></tr>
+          <tr><th scope="row">Yotea &amp; Yoka Kitchen</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=4615%20Centre%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 16 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> 16 min</a></td><td></td></tr>
+          <tr><th scope="row">Pepper Space</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=4609%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 6 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> 6 min</a></td><td></td></tr>
+          <tr><th scope="row">Chipotle Mexican Grill (Oakland)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3510%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 20 min</a></td><td></td></tr>
+          <tr><th scope="row">Rose Tea Cafe Express</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=414%20S%20Craig%20St%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 7 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> 7 min</a></td><td></td></tr>
+          <tr><th scope="row">Meet Bao (former location)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=114%20Atwood%20St%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 20 min</a></td><td></td></tr>
+          <tr><th scope="row">Ali Baba Restaurant</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=404%20S%20Craig%20St%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 7 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> 7 min</a></td><td></td></tr>
+          <tr><th scope="row">CAVA (Oakland)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3615%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 20 min</a></td><td></td></tr>
+          <tr><th scope="row">Roots Natural Kitchen (Oakland)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3610%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 20 min</a></td><td></td></tr>
+          <tr><th scope="row">Senyai Thai Kitchen</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=5865%20Ellsworth%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 25 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 25 min</a></td><td></td></tr>
+          <tr><th scope="row">Taiwanese Bistro Cafe 33</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=1711%20Shady%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 20 min</a></td><td></td></tr>
+          <tr><th scope="row">Piada Italian Street Food (Oakland)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3600%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 20 min</a></td><td></td></tr>
+          <tr><th scope="row">Surf Poke</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=5400%20Centre%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 20 min</a></td><td></td></tr>
+          <tr><th scope="row">Thai Gourmet Food Truck</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=4380%20Bigelow%20Blvd%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 18 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> 18 min</a></td><td></td></tr>
+          <tr><th scope="row">India on Wheels</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=Margaret%20Morrison%20St%20near%20Forbes%20Ave%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 11 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> 11 min</a></td><td></td></tr>
+          <tr><th scope="row">Thai &amp; Noodle Outlet</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=5813%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 20 min</a></td><td></td></tr>
+          <tr><th scope="row">Yue Bai Wei</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=5874%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 20 min</a></td><td></td></tr>
+          <tr><th scope="row">Everyday Noodles</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=5875%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 20 min</a></td><td></td></tr>
+          <tr><th scope="row">Primanti Bros. (Oakland)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3803%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 17 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> 17 min</a></td><td></td></tr>
+          <tr><th scope="row">Chaykhana</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=410%20S%20Main%20St%2C%20Pittsburgh%2C%20PA&amp;travelmode=driving" aria-label="Rideshare, about 25 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-car"/></svg> 25 min</a></td><td></td></tr>
+          <tr><th scope="row">Meet Pho</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=114%20Atwood%20St%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 20 min</a></td><td></td></tr>
+          <tr><th scope="row">Pho Van</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=2120%20Penn%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=driving" aria-label="Rideshare, about 20 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-car"/></svg> 20 min</a></td><td></td></tr>
+          <tr><th scope="row">CHiKN (Oakland)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3712%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 18 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> 18 min</a></td><td></td></tr>
+          <tr><th scope="row">Raising Cane’s Chicken Fingers (Oakland)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3610%20Fifth%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=transit" aria-label="Bus, about 20 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-bus"/></svg> 20 min</a></td><td></td></tr>
+          <tr><th scope="row">McDonald’s (Oakland)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=3708%20Forbes%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 18 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> 18 min</a></td><td></td></tr>
+          <tr><th scope="row">Grapow</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=411%20S%20Craig%20St%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 7 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> 7 min</a></td><td></td></tr>
+          <tr><th scope="row">Hunan Express</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=Newell-Simon%20Hall%20Atrium%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 2 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> 2 min</a></td><td></td></tr>
+          <tr><th scope="row">Taste of India</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=Resnik%20House%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 9 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> 9 min</a></td><td></td></tr>
+          <tr><th scope="row">Tahini</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=Tartans%20Pavilion%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 9 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> 9 min</a></td><td></td></tr>
+          <tr><th scope="row">Scotty’s Market by Salem’s</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=Forbes%20Beeler%20Apartments%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 10 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> 10 min</a></td><td></td></tr>
+          <tr><th scope="row">Shake Shack (The Terminal)</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=1767%20Smallman%20St%2C%20Pittsburgh%2C%20PA&amp;travelmode=driving" aria-label="Rideshare, about 20 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-car"/></svg> 20 min</a></td><td></td></tr>
+          <tr><th scope="row">Oishii Bento</th><td><a href="https://www.google.com/maps/dir/?api=1&amp;origin=Newell-Simon%20Hall%2C%20Carnegie%20Mellon%20University%2C%20Pittsburgh%2C%20PA&amp;destination=119%20Oakland%20Ave%2C%20Pittsburgh%2C%20PA&amp;travelmode=walking" aria-label="Walk, about 18 minutes, open directions"><svg class="travel-icon" aria-hidden="true"><use href="#icon-walk"/></svg> 18 min</a></td><td></td></tr>
         </tbody>
       </table>
       <a class="back" href="#home">Back to home</a>
     </section>
     <section class="panel destination" id="about-rpad" aria-labelledby="about-title">
       <h2 id="about-title">About R-PAD</h2>
-      <p>R-PAD Dinner reviews food around Carnegie Mellon University.</p>
+      <section class="about-card" aria-labelledby="lab-title">
+        <h3 id="lab-title">The R-PAD Lab</h3>
+        <p>The Robots Perceiving and Doing (R-PAD) Lab at Carnegie Mellon University’s Robotics Institute studies how robots perceive and act in everyday environments.</p>
+        <p><a href="https://r-pad.github.io/">Visit the R-PAD Lab website</a></p>
+      </section>
+      <section class="about-card" aria-labelledby="vote-title">
+        <h3 id="vote-title">Vote as an R-PAD member</h3>
+        <p>Member voting is coming soon.</p>
+      </section>
       <a class="back" href="#home">Back to home</a>
     </section>
   </main>
