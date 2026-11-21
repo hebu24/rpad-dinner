@@ -285,7 +285,7 @@
       <form aria-describedby="register-status">
         <fieldset disabled>
           <label>Full name <input name="full-name" autocomplete="name" minlength="2" maxlength="80" required></label>
-          <label>Reviewer ID <input name="reviewer-id" autocomplete="username" pattern="[A-Za-z0-9_\-]{3,30}" title="3 to 30 letters, numbers, underscores, or hyphens" required></label>
+          <label>Reviewer ID <input name="reviewer-id" autocomplete="username" required></label>
           <label>Password <input name="password" type="password" autocomplete="new-password" minlength="8" maxlength="72" required></label>
           <button type="submit" class="button button-primary">Request approval</button>
         </fieldset>
@@ -298,7 +298,7 @@
       <p id="login-status" role="status"></p>
       <form aria-describedby="login-status">
         <fieldset disabled>
-          <label>Reviewer ID <input name="reviewer-id" autocomplete="username" pattern="[A-Za-z0-9_\-]{3,30}" title="3 to 30 letters, numbers, underscores, or hyphens" required></label>
+          <label>Reviewer ID <input name="reviewer-id" autocomplete="username" required></label>
           <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
           <button type="submit" class="button button-primary">Log in</button>
         </fieldset>
@@ -329,8 +329,16 @@
       return element;
     }
 
-    function accountEmail(id) {
-      return id.trim().toLowerCase() + '@rpad-dinner.example.com';
+    async function accountEmail(id) {
+      const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(id));
+      const hex = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
+      return hex + '@id.rpad-dinner.example.com';
+    }
+
+    function reviewerId(data) {
+      const id = data.get('reviewer-id').trim();
+      if (!id) throw new Error('Enter a Reviewer ID.');
+      return id;
     }
 
     function syncControls() {
@@ -368,20 +376,29 @@
     }
 
     wireAccountForm('register', async data => {
+      const id = reviewerId(data);
       const { error } = await api.auth.signUp({
-        email: accountEmail(data.get('reviewer-id')),
+        email: await accountEmail(id),
         password: data.get('password'),
-        options: { data: { full_name: data.get('full-name').trim() } }
+        options: { data: { full_name: data.get('full-name').trim(), reviewer_id: id } }
       });
+      if (error?.code === 'user_already_exists' || error?.code === 'unexpected_failure') {
+        throw new Error('Could not register with this Reviewer ID. If it is already in use, choose another.');
+      }
       if (error) throw new Error(error.message);
       await api.auth.signOut({ scope: 'local' });
       return 'Registration submitted. You can log in once your account is approved.';
     });
 
     wireAccountForm('login', async data => {
-      const { error } = await api.auth.signInWithPassword({
-        email: accountEmail(data.get('reviewer-id')), password: data.get('password')
-      });
+      const id = reviewerId(data);
+      const password = data.get('password');
+      let { error } = await api.auth.signInWithPassword({ email: await accountEmail(id), password });
+      if (error?.code === 'invalid_credentials' && /^[a-z0-9_-]{3,30}$/i.test(id)) {
+        ({ error } = await api.auth.signInWithPassword({
+          email: id.toLowerCase() + '@rpad-dinner.example.com', password
+        }));
+      }
       if (error) throw new Error('Sign-in failed. Check your Reviewer ID and password.');
       await refreshMember();
       if (!reviewer) {
