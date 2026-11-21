@@ -101,6 +101,20 @@
     .notice { font-size: 0.9rem; }
     main.show-restaurant #home { display: none; }
     .rankings tbody th a { text-underline-offset: 0.16em; }
+      .restaurant-meta { border-bottom: 1px solid var(--gray); padding-bottom: 1.25rem; }
+    #restaurant-name { margin: 0.7rem 0; font-size: clamp(2rem, 5vw, 3rem); }
+    .field-label { color: var(--dark-red); font-weight: 750; }
+    .review-overview { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.75rem; margin: 1rem 0; padding: 0.8rem 1rem; background: var(--light-red); }
+    .review-overview div { display: grid; }
+    .review-overview dt { font-weight: 700; }
+    .review-overview dd { margin: 0; }
+    .review { border-left: 3px solid var(--dark-red); background: #f8f8f8; }
+    .review .review-meta { color: #555; font-size: 0.9rem; }
+    .review .badge { display: inline-block; background: var(--light-red); color: var(--dark-red); padding: 0.08rem 0.42rem; font-weight: 700; }
+    .review-fields { margin-bottom: 0; }
+    .review-fields dt { margin-top: 0.65rem; }
+    .review-fields dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .rankings .review-count { display: block; color: #555; font-size: 0.85rem; font-weight: 400; }
   </style>
 </head>
 <body>
@@ -212,9 +226,15 @@
       <a href="#food-rankings">Back to Food Rankings</a>
       <div class="restaurant-meta">
         <h2 id="restaurant-name" tabindex="-1"></h2>
+        <p><strong class="field-label">Summary</strong></p>
         <p id="restaurant-description"></p>
+        <p id="restaurant-travel"></p>
       </div>
-      <h3>Reviews</h3>
+      <h3>Restaurant reviews</h3>
+      <dl class="review-overview">
+        <div><dt>Review count</dt><dd id="review-count">0</dd></div>
+        <div><dt>Average rating</dt><dd id="review-average">—</dd></div>
+      </dl>
       <p id="review-status" class="notice" role="status"></p>
       <div id="review-list"></div>
       <details class="review-actions">
@@ -230,10 +250,13 @@
       <details class="review-actions">
         <summary>Example review</summary>
         <article class="review">
-          <h3>Sample reviewer · Illustrative only</h3>
-          <p><strong>Rating:</strong> 4 / 5 · Weak Accept</p>
-          <p><strong>Strengths:</strong> The menu was easy to navigate and the portions were generous.</p>
-          <p><strong>Weaknesses:</strong> There was limited seating during the lunch rush.</p>
+          <h3>Review by Sample Reviewer</h3>
+          <p class="review-meta"><span class="badge">Example review</span> Illustrative only</p>
+          <dl class="review-fields">
+            <dt class="field-label">Rating</dt><dd>4 / 5 · Weak Accept</dd>
+            <dt class="field-label">Strengths</dt><dd>The menu was easy to navigate and the portions were generous.</dd>
+            <dt class="field-label">Weaknesses</dt><dd>There was limited seating during the lunch rush.</dd>
+          </dl>
           <p class="reply"><strong>Example comment:</strong> How long did you wait for a table?</p>
         </article>
       </details>
@@ -288,25 +311,42 @@
       return review.scale === 5 ? review.rating : Math.max(1, Math.round(review.rating / 2));
     }
 
+    function averageRating(entries) {
+      return (entries.reduce((total, review) => total + displayRating(review), 0) / entries.length).toFixed(1);
+    }
+
     function renderScores() {
       document.querySelectorAll('[data-restaurant]').forEach(link => {
         const ratings = read(link.dataset.restaurant);
-        link.closest('tr').lastElementChild.textContent = ratings.length
-          ? (ratings.reduce((total, review) => total + displayRating(review), 0) / ratings.length).toFixed(1)
-          : '';
+        const scoreCell = link.closest('tr').lastElementChild;
+        scoreCell.textContent = ratings.length ? averageRating(ratings) + ' / 5' : '';
+        if (ratings.length) addText(scoreCell, 'span', ratings.length + (ratings.length === 1 ? ' review' : ' reviews'), 'review-count');
       });
     }
 
     function renderReviews() {
       list.replaceChildren();
+      page.querySelector('#review-count').textContent = reviews.length;
+      page.querySelector('#review-average').textContent = reviews.length ? averageRating(reviews) + ' / 5' : '—';
       status.textContent = (reviews.length ? reviews.length + (reviews.length === 1 ? ' review. ' : ' reviews. ') : 'No reviews yet. ')
         + 'Reviews and comments are saved in this browser.';
       reviews.forEach((review, index) => {
         const article = addText(list, 'article', '', 'review');
-        const heading = addText(article, 'h3', review.author + ' · ' + displayRating(review) + ' / 5 · ' + ratingLabels[displayRating(review) - 1]);
+        const heading = addText(article, 'h3', 'Review by ' + review.author);
         heading.tabIndex = -1;
-        addText(article, 'p', 'Strengths: ' + review.strengths);
-        addText(article, 'p', 'Weaknesses: ' + review.weaknesses);
+        const metadata = addText(article, 'p', '', 'review-meta');
+        addText(metadata, 'span', 'Restaurant review', 'badge');
+        if (review.createdAt) metadata.append(' · ' + new Date(review.createdAt).toLocaleDateString());
+        const fields = addText(article, 'dl', '', 'review-fields');
+        const rating = displayRating(review);
+        for (const [label, value] of [
+          ['Rating', rating + ' / 5 · ' + ratingLabels[rating - 1]],
+          ['Strengths', review.strengths],
+          ['Weaknesses', review.weaknesses]
+        ]) {
+          addText(fields, 'dt', label, 'field-label');
+          addText(fields, 'dd', value);
+        }
         review.comments.forEach(comment => {
           const reply = addText(article, 'div', '', 'reply');
           addText(reply, 'strong', comment.author);
@@ -347,7 +387,7 @@
         status.textContent = 'Enter a name, a rating from 1 to 5, strengths, and weaknesses.';
         return;
       }
-      if (save([...reviews, { author, rating, scale: 5, strengths, weaknesses, comments: [] }])) {
+      if (save([...reviews, { author, rating, scale: 5, strengths, weaknesses, comments: [], createdAt: Date.now() }])) {
         form.reset();
         form.parentElement.open = false;
         list.lastElementChild.querySelector('h3').focus();
@@ -361,7 +401,13 @@
       main.classList.toggle('show-restaurant', Boolean(active));
       if (!active) return;
       const title = page.querySelector('#restaurant-name');
-      title.textContent = document.querySelector('[data-restaurant="' + active + '"]').textContent;
+      const restaurantLink = document.querySelector('[data-restaurant="' + active + '"]');
+      title.textContent = restaurantLink.textContent;
+      const travel = restaurantLink.closest('tr').cells[1].querySelector('a').cloneNode(true);
+      const travelLine = page.querySelector('#restaurant-travel');
+      travelLine.replaceChildren();
+      addText(travelLine, 'strong', 'Travel from CMU Newell-Simon Hall ', 'field-label');
+      travelLine.append(travel);
       page.querySelector('#restaurant-description').textContent = restaurantDescriptions[active];
       form.reset();
       form.parentElement.open = false;
